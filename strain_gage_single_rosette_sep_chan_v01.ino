@@ -74,7 +74,7 @@ void loop() {
   }
   else { // for graphing code: message is in format reading_1,reading_2 in utf-8
     Serial.print(reading_1);
-    Serial.print(" , ");
+    Serial.print(",");
     Serial.println(reading_2);
   }
   
