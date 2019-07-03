@@ -55,7 +55,7 @@ void setup() {
   strain_2.begin(data_2, clk_2);
   strain_2.set_scale(calib_2);
   //strain_2.tare(); //Reset the scale to 0, below method is preffered
-  long zero_factor_2 = strain_1.read_average(calib_measures); //Get a baseline of readings
+  long zero_factor_2 = strain_2.read_average(calib_measures); //Get a baseline of readings
   strain_2.set_offset(zero_factor_2);
 
 }
