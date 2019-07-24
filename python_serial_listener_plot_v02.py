@@ -2,17 +2,25 @@ import serial # import Serial Library
 import numpy as np # Import numpy
 import matplotlib.pyplot as plt #import matplotlib library
 from drawnow import *
+import sys
+
+# runtime variables
+plotGraph = true
+serialPort = "com12" # to be redefined according to the actual port used
 
 # Create arrays for both readings, to be used on the graph
 chan1 = []
 chan2 = []
 
 # Create numpy arrays for storing the data experiment data
-experimentData = np.array(["TimeStamp", "Channel1","channel2"])
+experimentData = np.array(["TimeStamp", "Chan1","chan2"])
 
 # Opens serial port
-serialPort = "com12" # to be redefined according to the actual port used
-arduinoData = serial.Serial(serialPort, 9600) #Creating our serial object named arduinoData
+try:
+	arduinoData = serial.Serial(serialPort, 9600) #Creating our serial object named arduinoData
+except:
+	print("Error opening serial port. Close the Serial Monitor (if open) and retry")
+	sys.exit()
 
 # Tell matplotlib you want interactive mode to plot live data
 plt.ion() 
@@ -22,17 +30,12 @@ visibleDataPoints = 50
 cnt=0
 
 def makeFig(): #Create a function that makes our desired plot
-	#plt.ylim(80,90)                                 #Set y min and max values
-	plt.title('Live strain gage data')      #Plot the title
-	plt.grid(True)                                  #Turn the grid on
-	#plt.ylabel('getUnits')                            #Set ylabels
-	plt.plot(chan1, 'ro-', label='Channel 1')       #plot the temperature
+	plt.title('Live strain gage data') #Plot the title
+	plt.grid(True) #Turn the grid on
+	plt.plot(chan1, 'ro-', label='Channel 1') #plot the temperature
 	plt.legend(loc='upper left')                    #plot the legend
 	plt2=plt.twinx()                                #Create a second y axis
-	#plt.ylim(93450,93525)                           #Set limits of second y axis- adjust to readings you are getting
 	plt2.plot(chan2, 'b^-', label='Channel 2') #plot pressure data
-	#plt2.set_ylabel('getUnits')                    #label second y axis
-	#plt2.ticklabel_format(useOffset=False)           #Force matplotlib to NOT autoscale y axis
 	plt2.legend(loc='upper right')                  #plot the legend
 
 while True: # While loop that loops forever
