@@ -1,19 +1,40 @@
-import serial # import Serial Library
-import numpy as np # Import numpy
-import matplotlib.pyplot as plt #import matplotlib library
+import serial
+import numpy as np
+import matplotlib.pyplot as plt
 from drawnow import *
 import sys
+from datetime import datetime
 
 # runtime variables
-plotGraph = true
 serialPort = "com12" # to be redefined according to the actual port used
+visibleDataPoints = 50
 
 # Create arrays for both readings, to be used on the graph
-chan1 = []
-chan2 = []
+graphChan1 = []
+graphChan2 = []
+experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
 
-# Create numpy arrays for storing the data experiment data
-experimentData = np.array(["TimeStamp", "Chan1","chan2"])
+# initialization of state variable for recording data
+recording = False
+
+# function to update plot
+def updateGraph():
+	if recording:
+		plt.title('Live strain gage data - Recording...')
+	else:
+		plt.title('Live strain gage data')
+	plt.grid(True) #Turn the grid on
+	plt.plot(graphChan1, 'ro-', label='Channel 1')
+	plt.legend(loc='upper left')
+	plt2=plt.twinx()
+	plt2.plot(graphChan2, 'b^-', label='Channel 2')
+	plt2.legend(loc='upper right')
+	
+# function to store experiment data
+def logExperiment():
+	fileName = datetime.now().strftime("%y-%m-%d_%H:%M:%S") + "_BootSensorExperimentData"
+	numpy.savetxt(fileName, experimentData, delimiter=",")
+	print("Experiment data saved")
 
 # Opens serial port
 try:
@@ -25,55 +46,46 @@ except:
 # Tell matplotlib you want interactive mode to plot live data
 plt.ion() 
 
-# counter for data points on the graph
-visibleDataPoints = 50
-cnt=0
-
-def makeFig(): #Create a function that makes our desired plot
-	plt.title('Live strain gage data') #Plot the title
-	plt.grid(True) #Turn the grid on
-	plt.plot(chan1, 'ro-', label='Channel 1') #plot the temperature
-	plt.legend(loc='upper left')                    #plot the legend
-	plt2=plt.twinx()                                #Create a second y axis
-	plt2.plot(chan2, 'b^-', label='Channel 2') #plot pressure data
-	plt2.legend(loc='upper right')                  #plot the legend
-
-while True: # While loop that loops forever
+while True: # forever loop
 	
-	while (arduinoData.inWaiting()==0): #Wait here until there is data
+	while (arduinoData.inWaiting() == 0): #Wait here until there is data
 		#print("no data")
 		pass
 	
 	# read line from serial and decode it
-	arduinoString = arduinoData.readline()
-	arduinoString = arduinoString.decode(encoding = 'utf-8')
-	dataArray = arduinoString.split(',')
-	print(dataArray)
+	try:
+		arduinoString = arduinoData.readline()
+		arduinoString = arduinoString.decode(encoding = 'utf-8')
+		serialMessage = arduinoString.split(',')
+		serialMessage[-1] = serialMessage[-1].strip("\r\n")
+		#print(serialMessage)
+	except:
+		print("Problem reading Serial message. In case of crash try again")
+		pass
 	
-	if dataArray[0] == "button_input": # identifies if message is from experiment
-		timeStamp = int(dataArray[1])
-		dt1 = float(dataArray[2])            
-		dt2 = float(dataArray[3].strip("\r\n")) # for some reason, carriage return and end of line need to me removed
-		experimentData = np.append(experimentData,[timeStamp, dt1, dt2], axis=0)
-		print("Experiment data logged")
-		#print(experimentData[-1])
-		
-	else: # in case the message is not from experiment, data is retrieved for plotting
+	# identifies if message is "button_pressed"
+	if serialMessage[0] == "button_pressed": 
+		recording = not recording
+		if recording == True:
+			experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
+		else:
+			logExperiment()
 	
-		#Convert data elements to float
-		
-		dt1 = float(dataArray[0])            
-		dt2 = float(dataArray[1].strip("\r\n"))
-		
-		
-		chan1.append(dt1)                     #Build our chan1 array by appending temp readings
-		chan2.append(dt2)
-		drawnow(makeFig)                       #Call drawnow to update our live graph
-		
-		plt.pause(.1)                     #Pause Briefly. Important to keep drawnow from crashing
-		
-		# remove points on data array to limit axe
-		cnt = cnt+1
-		if(cnt > visibleDataPoints):
-			chan1.pop(0)
-			chan2.pop(0)
+	# extracts sensor data sent by arduino
+	if serialMessage[0] != "button_pressed": 
+		data1 = float(serialMessage[0])            
+		data2 = float(serialMessage[1])
+	
+	# stores data on respective graph arrays, limits size of array
+	graphChan1.append(data1)
+	graphChan2.append(data2)
+	if len(graphChan1) > visibleDataPoints:
+		graphChan1.pop(0)
+		graphChan2.pop(0)
+	
+	drawnow(updateGraph) # update live graph
+	
+	if recording:
+		experimentData = np.append(experimentData,[datetime.now(), data1, data2], axis=0)
+	
+plt.pause(.1)                     #Pause Briefly. Important to keep drawnow from crashing
