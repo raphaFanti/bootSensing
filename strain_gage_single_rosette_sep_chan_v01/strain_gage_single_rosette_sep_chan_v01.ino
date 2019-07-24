@@ -17,27 +17,39 @@
 
 #include <Q2HX711.h>
 
+// runtime variables
+const int readingDelay = 50;
+
+// pin declarations
 #define data_1  3
 #define clk_1  2
 
 #define data_2  6
 #define clk_2  5
 
+#define buttonPin 12
+
 #define debug false // serves while code is running on serial monitor
 
 // Strain gauges declaration
-// [ToDo] to be done via array in the future for several units
 Q2HX711 strain_1(data_1, clk_1);
-
 Q2HX711 strain_2(data_2, clk_2);
 
 void setup() {
   Serial.begin(9600);
+  
+  // button pin mode declaration
+  pinMode(buttonPin, INPUT);
 
 }
 
 void loop() {
 
+  // read button
+  if(digitalRead(buttonPin) == HIGH)
+    Serial.println("button_pressed");
+
+  // read sensor values
   float reading_1 = strain_1.read();
   float reading_2 = strain_2.read();
   
@@ -54,6 +66,6 @@ void loop() {
     Serial.println(reading_2);
   }
   
-  delay(50); // pause between readings
+  delay(readingDelay); // pause between readings
   
 }
