@@ -5,7 +5,7 @@ from drawnow import *
 import sys
 
 # runtime variables
-plotGraph = true
+plotGraph = True
 serialPort = "com12" # to be redefined according to the actual port used
 
 # Create arrays for both readings, to be used on the graph
