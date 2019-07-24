@@ -65,7 +65,7 @@ while True: # While loop that loops forever
 		
 		chan1.append(dt1)                     #Build our chan1 array by appending temp readings
 		chan2.append(dt2)
-		#drawnow(makeFig)                       #Call drawnow to update our live graph
+		drawnow(makeFig)                       #Call drawnow to update our live graph
 		
 		plt.pause(.1)                     #Pause Briefly. Important to keep drawnow from crashing
 		
