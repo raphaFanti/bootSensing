@@ -79,8 +79,10 @@ while True:
 		if recording:
 			experimentData = [["time", "chan1","chan2"]] # numpy array for experiment data
 			print("Recording experiment")
+			arduinoData.write("b")
 		else:
 			logExperiment()
+			arduinoData.write("e")
 			print("Experiment data saved")
 
 	# extracts sensor data sent by arduino

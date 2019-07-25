@@ -45,6 +45,7 @@ void setup() {
 
 int oldButtonState = LOW; // used to store and compare button states
 int buttonState = LOW;
+char receivedChar;
 
 void loop() {
 
@@ -53,6 +54,15 @@ void loop() {
   if(buttonState != oldButtonState && buttonState == HIGH)
     Serial.println("button_pressed");
   oldButtonState = buttonState;
+
+  // receive status led indicator and act
+  if (Serial.available() > 0) {
+    receivedChar = Serial.read();
+    if (receivedChar == 'b')
+      digitalWrite(LED_BUILTIN, HIGH);
+    if (receivedChar == 'e')
+      digitalWrite(LED_BUILTIN, LOW);
+  }  
 
   // read sensor values
   float reading_1 = strain_1.read();
