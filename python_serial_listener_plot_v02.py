@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from drawnow import *
 import sys
 from datetime import datetime
+import os
 
 # runtime variables
 plotGraph = True
@@ -13,7 +14,8 @@ visibleDataPoints = 50
 # Create arrays for both readings, to be used on the graph
 graphChan1 = []
 graphChan2 = []
-experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
+#experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
+experimentData =  [["time", "chan1","chan2"]] # numpy array for experiment data
 
 # initialization of state variable for recording data
 recording = False
@@ -33,10 +35,11 @@ def updateGraph():
 
 # function to store experiment data
 def logExperiment():
-	#fileName = datetime.now().strftime("%y-%m-%d_%Hh%Mm%Ss") + "_BootSensorExperimentData"
-	fileName = "BootSensorExperimentData"
-	np.savetxt(fileName, experimentData, delimiter=",")
-	print("Experiment data saved as file: " + fileName)
+	fileName = datetime.now().strftime("%y-%m-%d_%Hh%Mm%Ss") + "_BootSensorExperimentData.csv"
+	currentDir = os.getcwd()
+	dest = os.path.join(currentDir, "Data", fileName)
+	npExperimentData = np.array(experimentData)
+	np.savetxt(dest, experimentData, delimiter=",", fmt='%s')
 
 # Tell matplotlib you want interactive mode to plot live data
 plt.ion()
@@ -49,6 +52,7 @@ except:
 	sys.exit()
 arduinoData.flush() #clears buffers for serial port
 arduinoString = arduinoData.readline() #first line is not used for issues of truncated messages
+arduinoString = arduinoData.readline() #first line is not used for issues of truncated messages
 
 # forever loop
 while True:
@@ -56,7 +60,6 @@ while True:
 	while (arduinoData.inWaiting() == 0): #Wait here until there is data
 		#print("no data")
 		pass
-
 
 	try:
 		# read line from serial and decode it
@@ -71,12 +74,12 @@ while True:
 	# identifies if message is "button_pressed"
 	if serialMessage[0] == "button_pressed":
 		recording = not recording
-		print("Recording experiment")
 		if recording:
-			experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
+			#experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
+			experimentData = [["time", "chan1","chan2"]] # numpy array for experiment data
+			print("Recording experiment")
 		else:
 			logExperiment()
-			print("Saving experiment")
 
 	# extracts sensor data sent by arduino
 	else:
@@ -89,7 +92,8 @@ while True:
 		drawnow(updateGraph) # update live graph
 
 		if recording:
-			experimentData = np.append(experimentData,[datetime.now(), data1, data2], axis=0)
+			#experimentData = np.append(experimentData,[datetime.now(), data1, data2], axis=1)
+			experimentData.append([datetime.now(), data1, data2])
 
 	# controls for the length of graph array
 	if len(graphChan1) > visibleDataPoints:
