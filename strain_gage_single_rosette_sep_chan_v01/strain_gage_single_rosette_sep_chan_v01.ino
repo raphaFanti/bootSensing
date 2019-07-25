@@ -18,7 +18,7 @@
 #include <Q2HX711.h>
 
 // runtime variables
-const int readingDelay = 50;
+const int readingDelay = 110;
 
 // pin declarations
 #define data_1  3

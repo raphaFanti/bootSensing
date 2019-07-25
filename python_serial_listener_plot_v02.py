@@ -33,9 +33,13 @@ def updateGraph():
 
 # function to store experiment data
 def logExperiment():
-	fileName = datetime.now().strftime("%y-%m-%d_%H:%M:%S") + "_BootSensorExperimentData"
-	numpy.savetxt(fileName, experimentData, delimiter=",")
-	print("Experiment data saved")
+	#fileName = datetime.now().strftime("%y-%m-%d_%Hh%Mm%Ss") + "_BootSensorExperimentData"
+	fileName = "BootSensorExperimentData"
+	np.savetxt(fileName, experimentData, delimiter=",")
+	print("Experiment data saved as file: " + fileName)
+
+# Tell matplotlib you want interactive mode to plot live data
+plt.ion()
 
 # Opens serial port
 try:
@@ -43,18 +47,19 @@ try:
 except:
 	print("Error opening serial port. Close the Serial Monitor (if open) and retry")
 	sys.exit()
+arduinoData.flush() #clears buffers for serial port
+arduinoString = arduinoData.readline() #first line is not used for issues of truncated messages
 
-# Tell matplotlib you want interactive mode to plot live data
-plt.ion()
-
-while True: # forever loop
+# forever loop
+while True:
 
 	while (arduinoData.inWaiting() == 0): #Wait here until there is data
 		#print("no data")
 		pass
 
-	# read line from serial and decode it
+
 	try:
+		# read line from serial and decode it
 		arduinoString = arduinoData.readline()
 		arduinoString = arduinoString.decode(encoding = 'utf-8')
 		serialMessage = arduinoString.split(',')
@@ -62,31 +67,33 @@ while True: # forever loop
 		#print(serialMessage)
 	except:
 		print("Problem reading Serial message. In case of crash try again")
-		pass
 
 	# identifies if message is "button_pressed"
 	if serialMessage[0] == "button_pressed":
 		recording = not recording
-		if recording == True:
+		print("Recording experiment")
+		if recording:
 			experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
 		else:
 			logExperiment()
+			print("Saving experiment")
 
 	# extracts sensor data sent by arduino
-	if serialMessage[0] != "button_pressed":
+	else:
 		data1 = float(serialMessage[0])
 		data2 = float(serialMessage[1])
 
-	# stores data on respective graph arrays, limits size of array
-	graphChan1.append(data1)
-	graphChan2.append(data2)
+		# stores data on respective graph arrays, limits size of array
+		graphChan1.append(data1)
+		graphChan2.append(data2)
+		drawnow(updateGraph) # update live graph
+
+		if recording:
+			experimentData = np.append(experimentData,[datetime.now(), data1, data2], axis=0)
+
+	# controls for the length of graph array
 	if len(graphChan1) > visibleDataPoints:
 		graphChan1.pop(0)
 		graphChan2.pop(0)
-
-	drawnow(updateGraph) # update live graph
-
-	if recording:
-		experimentData = np.append(experimentData,[datetime.now(), data1, data2], axis=0)
 
 plt.pause(.1)                     #Pause Briefly. Important to keep drawnow from crashing
