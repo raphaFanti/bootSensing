@@ -7,13 +7,14 @@ from datetime import datetime
 import os
 
 # runtime variables
-plotGraph = True
+plotLiveGraph = False
 serialPort = "com12" # to be redefined according to the actual port used
 visibleDataPoints = 50
 
 # Create arrays for both readings, to be used on the graph
-graphChan1 = []
-graphChan2 = []
+if plotLiveGraph:
+	graphChan1 = []
+	graphChan2 = []
 #experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
 experimentData =  [["time", "chan1","chan2"]] # numpy array for experiment data
 
@@ -35,14 +36,15 @@ def updateGraph():
 
 # function to store experiment data
 def logExperiment():
-	fileName = datetime.now().strftime("%y-%m-%d_%Hh%Mm%Ss") + "_BootSensorExperimentData.csv"
+	fileName = datetime.now().strftime("%y-%m-%d_%Hh%Mm%Ss") + "_BootSensorData.csv"
 	currentDir = os.getcwd()
 	dest = os.path.join(currentDir, "Data", fileName)
 	npExperimentData = np.array(experimentData)
 	np.savetxt(dest, experimentData, delimiter=",", fmt='%s')
 
 # Tell matplotlib you want interactive mode to plot live data
-plt.ion()
+if plotLiveGraph:
+	plt.ion()
 
 # Opens serial port
 try:
@@ -75,11 +77,11 @@ while True:
 	if serialMessage[0] == "button_pressed":
 		recording = not recording
 		if recording:
-			#experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
 			experimentData = [["time", "chan1","chan2"]] # numpy array for experiment data
 			print("Recording experiment")
 		else:
 			logExperiment()
+			print("Experiment data saved")
 
 	# extracts sensor data sent by arduino
 	else:
@@ -87,17 +89,20 @@ while True:
 		data2 = float(serialMessage[1])
 
 		# stores data on respective graph arrays, limits size of array
-		graphChan1.append(data1)
-		graphChan2.append(data2)
-		drawnow(updateGraph) # update live graph
+		if plotLiveGraph:
+			graphChan1.append(data1)
+			graphChan2.append(data2)
+			drawnow(updateGraph) # update live graph
+		else:
+			print([data1, data2])
 
 		if recording:
-			#experimentData = np.append(experimentData,[datetime.now(), data1, data2], axis=1)
 			experimentData.append([datetime.now(), data1, data2])
 
 	# controls for the length of graph array
-	if len(graphChan1) > visibleDataPoints:
+	if plotLiveGraph and len(graphChan1) > visibleDataPoints:
 		graphChan1.pop(0)
 		graphChan2.pop(0)
 
-plt.pause(.1)                     #Pause Briefly. Important to keep drawnow from crashing
+if plotLiveGraph:
+	plt.pause(.1) #Pause Briefly. Important to keep drawnow from crashing
