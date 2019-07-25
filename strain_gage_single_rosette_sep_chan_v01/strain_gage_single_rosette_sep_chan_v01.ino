@@ -43,11 +43,16 @@ void setup() {
 
 }
 
+int oldButtonState = LOW; // used to store and compare button states
+int buttonState = LOW;
+
 void loop() {
 
-  // read button
-  if(digitalRead(buttonPin) == HIGH)
+  // read button and detect edge
+  buttonState = digitalRead(buttonPin);
+  if(buttonState != oldButtonState && buttonState == HIGH)
     Serial.println("button_pressed");
+  oldButtonState = buttonState;
 
   // read sensor values
   float reading_1 = strain_1.read();
