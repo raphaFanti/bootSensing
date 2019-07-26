@@ -23,16 +23,14 @@ recording = False
 
 # function to update plot
 def updateGraph():
-	if recording:
-		plt.title('Live strain gage data - Recording...')
-	else:
-		plt.title('Live strain gage data')
+	plt.title('Live strain gage data')
 	plt.grid(True) #Turn the grid on
+	plt.subplot(2, 1, 1)
 	plt.plot(graphChan1, 'ro-', label='Channel 1')
 	plt.legend(loc='upper left')
-	plt2=plt.twinx()
-	plt2.plot(graphChan2, 'b^-', label='Channel 2')
-	plt2.legend(loc='upper right')
+	plt.subplot(2, 1, 2)
+	plt.plot(graphChan2, 'b^-', label='Channel 2')
+	#plt.legend(loc='upper left')
 
 # function to store experiment data
 def logExperiment():
