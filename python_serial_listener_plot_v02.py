@@ -15,30 +15,54 @@ visibleDataPoints = 50
 if plotLiveGraph:
 	graphChan1 = []
 	graphChan2 = []
-#experimentData = np.array(["time", "chan1","chan2"]) # numpy array for experiment data
-experimentData =  [["time", "chan1","chan2"]] # numpy array for experiment data
+
+# experiment data and time variables
+experimentData =  [["time", "chan1","chan2"]]
+experimentTime = datetime.now()
 
 # initialization of state variable for recording data
 recording = False
 
+# counter for experiment graphs. Figure 1 is the live graph
+countFigures = 2
+
 # function to update plot
 def updateGraph():
+	plt.figure(1)
 	plt.title('Live strain gage data')
 	plt.grid(True) #Turn the grid on
 	plt.subplot(2, 1, 1)
-	plt.plot(graphChan1, 'ro-', label='Channel 1')
+	plt.plot(graphChan1, label='Channel 1A')
 	plt.legend(loc='upper left')
 	plt.subplot(2, 1, 2)
-	plt.plot(graphChan2, 'b^-', label='Channel 2')
+	plt.plot(graphChan2, label='Channel 1B')
 	#plt.legend(loc='upper left')
 
 # function to store experiment data
 def logExperiment():
-	fileName = datetime.now().strftime("%y-%m-%d_%Hh%Mm%Ss") + "_BootSensorData.csv"
+	fileName = experimentTime.strftime("%y-%m-%d_%Hh%Mm%Ss") + "_BootSensorData.csv"
 	currentDir = os.getcwd()
 	dest = os.path.join(currentDir, "Data", fileName)
 	npExperimentData = np.array(experimentData)
 	np.savetxt(dest, experimentData, delimiter=",", fmt='%s')
+
+# function to generate a static graph image with experiment data
+def printExperimentGraph():
+	#countFigures += 1
+	npExperimentData = np.array(experimentData)
+	npExperimentData = np.delete(npExperimentData, (0), axis=0)
+	print(npExperimentData)
+	plt.figure()
+	plt.title("Experiment recording" + experimentTime.strftime("%y-%m-%d_%Hh%Mm%Ss"))
+	plt.subplot(2, 1, 1)
+	plt.plot(npExperimentData[:,1], label='Channel 1A')
+	plt.subplot(2, 1, 2)
+	plt.plot(npExperimentData[:,2], label='Channel 1B')
+	fileName = experimentTime.strftime("%y-%m-%d_%Hh%Mm%Ss") + "_BootSensorGraph"
+	currentDir = os.getcwd()
+	dest = os.path.join(currentDir, "Data", fileName)
+	plt.show()
+	plt.savefig(dest)
 
 # Tell matplotlib you want interactive mode to plot live data
 if plotLiveGraph:
@@ -80,10 +104,12 @@ while True:
 		recording = not recording
 		if recording:
 			experimentData = [["time", "chan1","chan2"]] # numpy array for experiment data
+			experimentTime = datetime.now()
 			arduinoData.write(str.encode("b"))
 			print("Recording experiment")
 		else:
 			logExperiment()
+			printExperimentGraph()
 			arduinoData.write(str.encode("e"))
 			print("Experiment data saved")
 
@@ -92,10 +118,11 @@ while True:
 		try:
 			data1 = float(serialMessage[0])
 			data2 = float(serialMessage[1])
+			dataTime = datetime.now()
 		except:
 			data1 = ""
 			data2 = ""
-			print("Problem decoding serial message. Please retry. Value not stored")
+			print("Problem decoding serial message. Value not stored")
 
 		# stores data on respective graph arrays, limits size of array
 		if plotLiveGraph:
@@ -106,7 +133,7 @@ while True:
 			print([data1, data2])
 
 		if recording:
-			experimentData.append([datetime.now(), data1, data2])
+			experimentData.append([dataTime, data1, data2])
 
 	# controls for the length of graph array
 	if plotLiveGraph and len(graphChan1) > visibleDataPoints:
