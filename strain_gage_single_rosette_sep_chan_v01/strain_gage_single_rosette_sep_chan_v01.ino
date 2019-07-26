@@ -29,6 +29,8 @@ const int readingDelay = 110;
 
 #define buttonPin 12
 
+#define recordingLedPin 9
+
 #define debug false // serves while code is running on serial monitor
 
 // Strain gauges declaration
@@ -58,10 +60,10 @@ void loop() {
   // receive status led indicator and act
   if (Serial.available() > 0) {
     receivedChar = Serial.read();
-    if (receivedChar == 'b')
-      digitalWrite(LED_BUILTIN, HIGH);
-    if (receivedChar == 'e')
-      digitalWrite(LED_BUILTIN, LOW);
+    if (receivedChar == 'b') // b is for begining of recording
+      digitalWrite(recordingLedPin, HIGH);
+    if (receivedChar == 'e') // e is for end of recording
+      digitalWrite(recordingLedPin, LOW);
   }  
 
   // read sensor values

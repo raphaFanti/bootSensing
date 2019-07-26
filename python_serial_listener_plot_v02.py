@@ -52,9 +52,13 @@ try:
 except:
 	print("Error opening serial port. Close the Serial Monitor (if open) and retry")
 	sys.exit()
+
+
 arduinoData.flush() #clears buffers for serial port
-arduinoString = arduinoData.readline() #first line is not used for issues of truncated messages
-arduinoString = arduinoData.readline() #first line is not used for issues of truncated messages
+while (arduinoData.inWaiting() == 0): #Wait here until there is data
+	#print("no data")
+	pass
+firstString = arduinoData.readline() #first line is not used for issues of truncated messages
 
 # forever loop
 while True:
@@ -78,8 +82,8 @@ while True:
 		recording = not recording
 		if recording:
 			experimentData = [["time", "chan1","chan2"]] # numpy array for experiment data
-			print("Recording experiment")
 			arduinoData.write(str.encode("b"))
+			print("Recording experiment")
 		else:
 			logExperiment()
 			arduinoData.write(str.encode("e"))
@@ -87,8 +91,13 @@ while True:
 
 	# extracts sensor data sent by arduino
 	else:
-		data1 = float(serialMessage[0])
-		data2 = float(serialMessage[1])
+		try:
+			data1 = float(serialMessage[0])
+			data2 = float(serialMessage[1])
+		except:
+			data1 = ""
+			data2 = ""
+			print("Problem decoding serial message. Please retry. Value not stored")
 
 		# stores data on respective graph arrays, limits size of array
 		if plotLiveGraph:
