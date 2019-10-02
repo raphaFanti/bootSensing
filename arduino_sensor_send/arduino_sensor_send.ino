@@ -21,19 +21,35 @@
 const int readingDelay = 50;
 
 // pin declarations
+// declare each sensor, consisting of a pair (data, clock) to be included on each array
+int dataPins[] = {3, 6};
+int clockPins[] = {2, 5};
+
+const int numSens = sizeof(dataPins) / sizeof(dataPins[0]);
+
+
+// to delete afterwards
 #define data_1  3
 #define clk_1  2
-
 #define data_2  6
 #define clk_2  5
 
+// record button declarations
 #define buttonPin 12
 
 #define recordingLedPin 9
 
 #define debug false // serves while code is running on serial monitor
 
-// Strain gauges declaration
+/* Strain gauges declaration
+int stGauges[numSens];
+for (int i = 0; i < numSens; i++){
+  Q2HX711 stGauge(dataPins[i], clockPins[i]);
+  stGauges[i] = stGauge;
+}
+*/
+
+// to delete afterwards
 Q2HX711 strain_1(data_1, clk_1);
 Q2HX711 strain_2(data_2, clk_2);
 

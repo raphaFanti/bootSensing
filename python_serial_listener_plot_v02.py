@@ -8,7 +8,7 @@ import os
 
 # runtime variables
 plotLiveGraph = False
-serialPort = "com12" # to be redefined according to the actual port used
+serialPort = "COM12" # to be redefined according to the actual port used
 visibleDataPoints = 50
 
 # Create arrays for both readings, to be used on the graph
