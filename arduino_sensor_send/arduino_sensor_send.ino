@@ -44,14 +44,12 @@ const int numSens = sizeof(dataPins) / sizeof(dataPins[0]);
 #define buttonPin 12
 #define recordingLedPin 9
 
-#define debug false // serves while code is running on serial monitor
-
 // Strain gauges declaration (traditional style - to be improved)
   Q2HX711 strain_1(data_1, clk_1); // Load Cell channel
   Q2HX711 strain_2(data_2, clk_2);
   Q2HX711 strain_3(data_3, clk_3);
   Q2HX711 strain_4(data_4, clk_4);
-  Q2HX711 strain_5(data_5, clk_5);
+  //Q2HX711 strain_5(data_5, clk_5);
 
 void setup() {
   
@@ -94,36 +92,36 @@ void loop() {
   }  
 
   // read sensor values
+  
+  //Serial.println("reading sensors...");
+
   float reading_1 = strain_1.read();
+  Serial.print(reading_1);
+
   float reading_2 = strain_2.read();
+  Serial.print(",");
+  Serial.print(reading_2);
+
+  //Serial.println("sensors read...");
+
   float reading_3 = strain_3.read();
-  float reading_4 = strain_4.read();
-  float reading_5 = strain_5.read();
+  Serial.print(",");
+  Serial.println(reading_3);
   
-  if(debug){
-    Serial.print("reading 1: ");
-    Serial.print(reading_1);
-    Serial.print(" , reading 2: ");
-    Serial.print(reading_2);
-    Serial.print(" , reading 3: ");
-    Serial.print(reading_3);
-    Serial.print(" , reading 4: ");
-    Serial.print(reading_4);
-    Serial.print(" , reading 5: ");
-    Serial.println(reading_5);
-  }
+  //float reading_4 = strain_4.read();
+  //float reading_5 = strain_5.read();
+
   
-  else { // for graphing code: message is in format reading_1,reading_2,...,reading_5 in utf-8
-    Serial.print(reading_1);
-    Serial.print(",");
-    Serial.print(reading_2);
-    Serial.print(",");
-    Serial.print(reading_3);
-    Serial.print(",");
-    Serial.print(reading_4);
-    Serial.print(",");
-    Serial.println(reading_5);
-  }
+  
+  /*
+  Serial.print(reading_2);
+  Serial.print(",");
+  Serial.print(reading_3);
+  Serial.print(",");  
+  Serial.print(reading_4);
+  Serial.print(",");
+  Serial.println(reading_5);
+  */
   
   delay(readingDelay); // pause between readings
   
