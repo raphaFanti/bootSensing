@@ -29,22 +29,29 @@ const int numSens = sizeof(dataPins) / sizeof(dataPins[0]);
 
 
 // to delete afterwards
-#define data_1  3
-#define clk_1  2
-#define data_2  6
-#define clk_2  5
-#define data_3  0
-#define clk_3  0
-#define data_4  0
-#define clk_4  0
-#define data_5  0
-#define clk_5  0
+#define data_1  6
+#define clk_1  5
+#define data_2  1
+#define clk_2  0
+#define data_3  3
+#define clk_3  2
+#define data_4  8
+#define clk_4  7
+#define data_5  4
+#define clk_5  10
 
 // record button declarations
 #define buttonPin 12
 #define recordingLedPin 9
 
 #define debug false // serves while code is running on serial monitor
+
+// Strain gauges declaration (traditional style - to be improved)
+  Q2HX711 strain_1(data_1, clk_1); // Load Cell channel
+  Q2HX711 strain_2(data_2, clk_2);
+  Q2HX711 strain_3(data_3, clk_3);
+  Q2HX711 strain_4(data_4, clk_4);
+  Q2HX711 strain_5(data_5, clk_5);
 
 void setup() {
   
@@ -58,16 +65,10 @@ void setup() {
     stGauges[i] = stGauge;
   }
   */
-
-  // Strain gauges declaration (traditional style - to be improved)
-  Q2HX711 strain_1(data_1, clk_1); // Load Cell channel
-  Q2HX711 strain_2(data_2, clk_2);
-  Q2HX711 strain_3(data_3, clk_3);
-  Q2HX711 strain_4(data_4, clk_4);
-  Q2HX711 strain_5(data_5, clk_5);
   
   // button pin mode declaration
   pinMode(buttonPin, INPUT);
+  pinMode(recordingLedPin, OUTPUT);
 
 }
 
@@ -102,9 +103,14 @@ void loop() {
   if(debug){
     Serial.print("reading 1: ");
     Serial.print(reading_1);
-    
     Serial.print(" , reading 2: ");
-    Serial.println(reading_2);
+    Serial.print(reading_2);
+    Serial.print(" , reading 3: ");
+    Serial.print(reading_3);
+    Serial.print(" , reading 4: ");
+    Serial.print(reading_4);
+    Serial.print(" , reading 5: ");
+    Serial.println(reading_5);
   }
   
   else { // for graphing code: message is in format reading_1,reading_2,...,reading_5 in utf-8
