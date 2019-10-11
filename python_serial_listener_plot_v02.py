@@ -8,7 +8,7 @@ import os
 
 # runtime variables
 plotLiveGraph = False
-serialPort = "COM12" # to be redefined according to the actual port used
+serialPort = "com12" # to be redefined according to the actual port used
 visibleDataPoints = 50
 
 # Create arrays for both readings, to be used on the graph
@@ -71,8 +71,9 @@ if plotLiveGraph:
 # Opens serial port
 try:
 	arduinoData = serial.Serial(serialPort, 9600) #Creating our serial object named arduinoData
-except:
+except Exception as e:
 	print("Error opening serial port. Close the Serial Monitor (if open) and retry")
+	print(e)
 	sys.exit()
 
 
