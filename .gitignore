@@ -2,6 +2,7 @@ libraries
 Data
 *.DS_Store
 *.csv
+*.txt
 
 
 .DS_Store
