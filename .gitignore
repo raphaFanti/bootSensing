@@ -1,11 +1,11 @@
 libraries
 Data
 *.DS_Store
-*.csv
-*.txt
+#*.csv
+#*.txt
 
 
-.DS_Store
+#.DS_Store
 #analysis/.DS_Store
 #analysis/06. Analysis_MTB_080121/08.01.2021 100929.txt
 *.txt
