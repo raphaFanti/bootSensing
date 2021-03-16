@@ -1,20 +1,16 @@
 libraries
 Data
 *.DS_Store
-#*.csv
+
+# Data files
+*.csv
+*.txt
+
+
+#.DS_Store
+#analysis/.DS_Store
+#analysis/06. Analysis_MTB_080121/08.01.2021 100929.txt
 #*.txt
+#*.csv
 
 
-.DS_Store
-analysis/.DS_Store
-analysis/06. Analysis_MTB_080121/08.01.2021 100929.txt
-*.txt
-*.csv
-*.pdf
-
-.DS_Store
-analysis/.DS_Store
-analysis/05.Buckle_closure_TLT
-*.txt
-*.csv
-*.pdf
