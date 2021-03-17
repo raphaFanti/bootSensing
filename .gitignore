@@ -7,8 +7,10 @@ Data
 *.csv
 *.txt
 
-# Ignore photos
+# Ignore photos and presentations
 *.jpg
+*.ppt
+*.pptx
 
 # Ignores added by Raph to solve problems
 .DS_Store
