@@ -1,17 +1,19 @@
+# Ignore folders
 libraries
 Data
-photos
 *.DS_Store
 
-# Data files
+# Ignore data files
 *.csv
 *.txt
 
+# Ignore photos
+*.jpg
 
-#.DS_Store
-#analysis/.DS_Store
-#analysis/06. Analysis_MTB_080121/08.01.2021 100929.txt
-#*.txt
-#*.csv
+# Ignores added by Raph to solve problems
+.DS_Store
+analysis/.DS_Store
+analysis/06. Analysis_MTB_080121/08.01.2021 100929.txt
+
 
 
